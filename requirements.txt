@@ -1,4 +1,5 @@
-matplotlib==3.4.2
-tensorflow==2.5.0
-numpy==1.19.2
-console-menu==0.6.0
+matplotlib==3.5.2
+tensorflow==2.9.0
+numpy==1.22.3
+console-menu==0.7.1
+keras~=2.9.0
