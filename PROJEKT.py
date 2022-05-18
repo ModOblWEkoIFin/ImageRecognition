@@ -1,13 +1,20 @@
-# wczytanie potrzebnych bibliotek
+# Wczytanie wymaganych bibliotek
+import sys
 import tensorflow as tf
+import matplotlib.pyplot as plt
+import numpy as np
+from keras.utils import to_categorical
+from keras.models import Sequential
+from keras.layers import Flatten
+from keras.layers import Dense
+from keras.callbacks import EarlyStopping
+from keras.layers import Dropout
 
-# wczytanie danych
-fashion_mnist = tf.keras.datasets.fashion_mnist
-(X_train, y_train), (X_val, y_val) = fashion_mnist.load_data()
+# Wczytanie danych CIFAR10
+cifar10 = tf.keras.datasets.cifar10
+(X_train, y_train), (X_val, y_val) = cifar10.load_data()
 
 print(f'Zbiór uczący: {X_train.shape}, zbiór walidacyjny: {X_val.shape}')
-
-import matplotlib.pyplot as plt
 
 plt.figure(figsize=(7, 7))
 plt.imshow(X_train[0], cmap=plt.cm.binary)
@@ -15,7 +22,7 @@ plt.colorbar()
 plt.show()
 
 
-def plot_digit(digit, dem=28, font_size=8):
+def plot_digit(digit, dem=32, font_size=8):
     max_ax = font_size * dem
 
     fig = plt.figure(figsize=(10, 10))
@@ -23,6 +30,7 @@ def plot_digit(digit, dem=28, font_size=8):
     plt.ylim([0, max_ax])
     plt.axis('off')
 
+# TODO do zmiany pasek odcienia szarosci generowany po prawej przy pierwszym obrazie
     for idx in range(dem):
         for jdx in range(dem):
             t = plt.text(idx * font_size, max_ax - jdx * font_size,
@@ -34,11 +42,11 @@ def plot_digit(digit, dem=28, font_size=8):
 
     plt.show()
 
+# TBD
+# plot_digit(X_train[0])
 
-plot_digit(X_train[0])
-
-class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
-               'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
+               'dog', 'frog', 'horse', 'ship', 'truck']
 
 plt.figure(figsize=(14, 10))
 for i in range(40):
@@ -47,28 +55,22 @@ for i in range(40):
     plt.yticks([])
     plt.grid(False)
     plt.imshow(X_train[i], cmap=plt.cm.binary)
-    plt.xlabel(class_names[y_train[i]])
+    plt.xlabel(np.array(class_names)[y_train[i]])
 plt.show()
 
+# Przelicz wartosci do przedzialu 0-1
 X_train = X_train.astype('float32') / 255.0
 X_val = X_val.astype('float32') / 255.0
 
-from tensorflow.keras.utils import to_categorical
-
 y_train = to_categorical(y_train, len(class_names))
 y_val = to_categorical(y_val, len(class_names))
-from tensorflow.keras.models import Sequential
 
 model = Sequential()
 
-from tensorflow.keras.layers import Flatten
+model.add(Flatten(input_shape=(32, 32, 3)))
 
-model.add(Flatten(input_shape=(28, 28)))
-
-from tensorflow.keras.layers import Dense
-
-model.add(Dense(128, activation='relu'))
-
+model.add(Dense(3000, activation='relu'))
+model.add(Dense(1000, activation='relu'))
 model.add(Dense(10, activation='softmax'))
 
 model.compile(optimizer='adam',
@@ -93,9 +95,9 @@ history = model.fit(X_train,
                     validation_split=0.2
                     )
 
-
-def draw_curves(history, key1='accuracy', ylim1=(0.8, 1.00),
-                key2='loss', ylim2=(0.0, 1.0)):
+# Zmienilem rozmiary wykresu aby wartosci mogly sie zmiescic
+def draw_curves(history, key1='accuracy', ylim1=(0.0, 2.00),
+                key2='loss', ylim2=(0.0, 2.00)):
     plt.figure(figsize=(12, 4))
 
     plt.subplot(1, 2, 1)
@@ -116,15 +118,12 @@ def draw_curves(history, key1='accuracy', ylim1=(0.8, 1.00),
 
     plt.show()
 
-
-draw_curves(history, key1='accuracy', ylim1=(0.7, 0.95),
-            key2='loss', ylim2=(0.0, 0.8))
-from tensorflow.keras.callbacks import EarlyStopping
-
-from tensorflow.keras.layers import Dropout
+# Zmienilem rozmiary wykresu aby wartosci mogly sie zmiescic
+draw_curves(history, key1='accuracy', ylim1=(0.0, 2.00),
+            key2='loss', ylim2=(0.0, 2.00))
 
 model_best = Sequential()
-model_best.add(Flatten(input_shape=(28, 28)))
+model_best.add(Flatten(input_shape=(32, 32, 3)))
 model_best.add(Dense(128, activation='relu'))
 model_best.add(Dropout(0.3))
 model_best.add(Dense(64, activation='relu'))
@@ -150,15 +149,14 @@ history_best = model_best.fit(X_train,
                               callbacks=[EarlyStop]
                               )
 
-draw_curves(history_best, key1='accuracy', ylim1=(0.7, 1.0),
-            key2='loss', ylim2=(0.0, 0.8))
+# Zmienilem rozmiary wykresu aby wartosci mogly sie zmiescic
+draw_curves(history_best, key1='accuracy', ylim1=(0.0, 2.00),
+            key2='loss', ylim2=(0.0, 2.00))
 
 y_train_pred = model.predict(X_train)
 y_val_pred = model.predict(X_val)
 
 # rysowanie predykcji dla danego zdjęcia
-import numpy as np
-
 
 def plot_value_img(i, predictions, true_label, img):
     predictions, true_label, img = predictions[i], true_label[i], img[i]
@@ -189,8 +187,7 @@ def plot_value_img(i, predictions, true_label, img):
 
 
 # menu do sprawdzania wyników
-import sys
-
+# TODO dodanie warunku gdy podana wartosc jest z poza zakresu
 
 def test():
     while True:
