@@ -16,34 +16,34 @@ cifar10 = tf.keras.datasets.cifar10
 
 print(f'Zbiór uczący: {X_train.shape}, zbiór walidacyjny: {X_val.shape}')
 
-plt.figure(figsize=(7, 7))
-plt.imshow(X_train[0], cmap=plt.cm.binary)
-plt.colorbar()
+firstFig = plt.imshow(X_train[0])
+plt.colorbar(firstFig).remove()
 plt.show()
 
 
 def plot_digit(digit, dem=32, font_size=8):
     max_ax = font_size * dem
 
-    fig = plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(10,10))
     plt.xlim([0, max_ax])
     plt.ylim([0, max_ax])
     plt.axis('off')
 
-# TODO do zmiany pasek odcienia szarosci generowany po prawej przy pierwszym obrazie
     for idx in range(dem):
         for jdx in range(dem):
             t = plt.text(idx * font_size, max_ax - jdx * font_size,
-                         digit[jdx][idx], fontsize=font_size,
+                         digit[jdx][idx][0], fontsize=font_size, # wyswietla wartości pierwszej skladowej RGB, jak chcemy wszystkie 3 to trzeba przerobic
                          color="#000000")
-            c = digit[jdx][idx] / 255.
-            t.set_bbox(dict(facecolor=(c, c, c), alpha=0.5,
+            c0 = digit[jdx][idx][0] / 255
+            c1 = digit[jdx][idx][1] / 255
+            c2 = digit[jdx][idx][2] / 255
+            t.set_bbox(dict(facecolor=(c0, c1, c2), alpha=0.5,
                             edgecolor='#f1f1f1'))
 
     plt.show()
 
 # TBD
-# plot_digit(X_train[0])
+plot_digit(X_train[0])
 
 class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
                'dog', 'frog', 'horse', 'ship', 'truck']
@@ -59,8 +59,8 @@ for i in range(40):
 plt.show()
 
 # Przelicz wartosci do przedzialu 0-1
-X_train = X_train.astype('float32') / 255.0
-X_val = X_val.astype('float32') / 255.0
+X_train = X_train.astype('float32') / 255
+X_val = X_val.astype('float32') / 255
 
 y_train = to_categorical(y_train, len(class_names))
 y_val = to_categorical(y_val, len(class_names))
@@ -69,8 +69,9 @@ model = Sequential()
 
 model.add(Flatten(input_shape=(32, 32, 3)))
 
-model.add(Dense(3000, activation='relu'))
-model.add(Dense(1000, activation='relu'))
+# TODO IMO było za dużo neuronów w warstwach, ilości warstw/neuronów do przetestowania
+model.add(Dense(128, activation='relu'))
+model.add(Dense(16, activation='relu'))
 model.add(Dense(10, activation='softmax'))
 
 model.compile(optimizer='adam',
@@ -86,14 +87,14 @@ history = model.fit(X_train,
                     batch_size=256,
                     validation_data=(X_val, y_val)
                     )
-
-history = model.fit(X_train,
-                    y_train,
-                    epochs=10,
-                    verbose=1,
-                    batch_size=256,
-                    validation_split=0.2
-                    )
+# nie bardzo wiem po co to ponizej bylo, z doca widzę że wyłączało zbiór walidacyjny (None) a zamiast tego random ze zbioru uczącego
+# history = model.fit(X_train,
+#                     y_train,
+#                     epochs=10,
+#                     verbose=1,
+#                     batch_size=256,
+#                     validation_split=0.2
+#                     )
 
 # Zmienilem rozmiary wykresu aby wartosci mogly sie zmiescic
 def draw_curves(history, key1='accuracy', ylim1=(0.0, 2.00),
@@ -187,15 +188,17 @@ def plot_value_img(i, predictions, true_label, img):
 
 
 # menu do sprawdzania wyników
-# TODO dodanie warunku gdy podana wartosc jest z poza zakresu
 
 def test():
     while True:
         x = input("Podaj numer obrazu do sprawdzenia (1,9999) lub 0 w celu zakonczenia programu: ")
-        x = int(x)
-        if x == 0:
-            sys.exit("Exiting...")
-        plot_value_img(x, y_val_pred, y_val, X_val)
-
+        try:
+            x = int(x)
+            if x == 0:
+                sys.exit("Exiting...")
+            plot_value_img(x, y_val_pred, y_val, X_val)
+        except Exception as ex:
+            print(f'Niepoprawny argument: {x}')
+            print(f'Treść błędu: {ex}')
 
 test()
