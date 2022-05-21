@@ -42,12 +42,13 @@ def plot_digit(digit, dem=32, font_size=8):
 
     plt.show()
 
-# TBD
+# wyswietlenie obrazu z wartosciami odcieni szarosci (raczej nie jest nam to potrzebne)
 plot_digit(X_train[0])
-
+# Zbior uzytych klas
 class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
                'dog', 'frog', 'horse', 'ship', 'truck']
 
+# Wydrukowanie przykladowych obrazow z nazwami klas
 plt.figure(figsize=(14, 10))
 for i in range(40):
     plt.subplot(5, 8, i + 1)
@@ -67,12 +68,15 @@ y_val = to_categorical(y_val, len(class_names))
 
 model = Sequential()
 
+# Zawsze dla modelu nalezy zdefiniowac rozmiar pierwszego obrazu (rozmiar x, rozmiar y, oznaczenie RGB)
 model.add(Flatten(input_shape=(32, 32, 3)))
 
-# TODO IMO było za dużo neuronów w warstwach, ilości warstw/neuronów do przetestowania
-model.add(Dense(128, activation='relu'))
-model.add(Dense(16, activation='relu'))
-model.add(Dense(10, activation='softmax'))
+# Przy wartosciach warstw neuronowych 128/16/10 - wartosc oceny modelu to tylko 10%. Porownaj sobie teraz z  768/256/10. Model niemalze pokrywa sie z danymi testowymi.
+# Moznaby jeszcze pomanipulowac warstosciami w relu, aby otrzymac jeszcze dokladniejszy
+# Start building Sequiential model in keras. We will use 3 layer MLP model for modelling the dataset.
+model.add(Dense(768, activation='relu')) #rectified linear unit activation function
+model.add(Dense(256, activation='relu')) #rectified linear unit activation function
+model.add(Dense(10, activation='softmax')) #softmax converts a vector of value to a probability distribution
 
 model.compile(optimizer='adam',
               loss='categorical_crossentropy',
@@ -80,6 +84,7 @@ model.compile(optimizer='adam',
 
 model.summary()
 
+# Dostosowanie danych treningowych do skonfigurowanej sieci neuronowej
 history = model.fit(X_train,
                     y_train,
                     epochs=10,
@@ -88,6 +93,7 @@ history = model.fit(X_train,
                     validation_data=(X_val, y_val)
                     )
 # nie bardzo wiem po co to ponizej bylo, z doca widzę że wyłączało zbiór walidacyjny (None) a zamiast tego random ze zbioru uczącego
+# Kamil: Gdybysmy chcieli podzielic zbiory na: treningowy i testowy. Np. po to aby po zakoczeniu porownac oba zbiory
 # history = model.fit(X_train,
 #                     y_train,
 #                     epochs=10,
@@ -96,7 +102,7 @@ history = model.fit(X_train,
 #                     validation_split=0.2
 #                     )
 
-# Zmienilem rozmiary wykresu aby wartosci mogly sie zmiescic
+# Rysowanie wykresu. Mozna dostosowac argumenty, aby wykres byl lepiej widoczny
 def draw_curves(history, key1='accuracy', ylim1=(0.0, 2.00),
                 key2='loss', ylim2=(0.0, 2.00)):
     plt.figure(figsize=(12, 4))
@@ -119,7 +125,7 @@ def draw_curves(history, key1='accuracy', ylim1=(0.0, 2.00),
 
     plt.show()
 
-# Zmienilem rozmiary wykresu aby wartosci mogly sie zmiescic
+# Rysowanie wykresu. Mozna dostosowac argumenty, aby wykres byl lepiej widoczny
 draw_curves(history, key1='accuracy', ylim1=(0.0, 2.00),
             key2='loss', ylim2=(0.0, 2.00))
 
@@ -150,14 +156,14 @@ history_best = model_best.fit(X_train,
                               callbacks=[EarlyStop]
                               )
 
-# Zmienilem rozmiary wykresu aby wartosci mogly sie zmiescic
+# Rysowanie wykresu. Mozna dostosowac argumenty, aby wykres byl lepiej widoczny
 draw_curves(history_best, key1='accuracy', ylim1=(0.0, 2.00),
             key2='loss', ylim2=(0.0, 2.00))
 
 y_train_pred = model.predict(X_train)
 y_val_pred = model.predict(X_val)
 
-# rysowanie predykcji dla danego zdjęcia
+# rysowanie predykcji dla danego zdjęcia, ktore wskazalismy
 
 def plot_value_img(i, predictions, true_label, img):
     predictions, true_label, img = predictions[i], true_label[i], img[i]
