@@ -1,0 +1,64 @@
+Zbiór uczący: (50000, 32, 32, 3), zbiór walidacyjny: (10000, 32, 32, 3)
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ conv2d (Conv2D)             (None, 32, 32, 32)        896       
+                                                                 
+ conv2d_1 (Conv2D)           (None, 32, 32, 32)        9248      
+                                                                 
+ max_pooling2d (MaxPooling2D  (None, 16, 16, 32)       0         
+ )                                                               
+                                                                 
+ conv2d_2 (Conv2D)           (None, 16, 16, 64)        18496     
+                                                                 
+ conv2d_3 (Conv2D)           (None, 16, 16, 64)        36928     
+                                                                 
+ max_pooling2d_1 (MaxPooling  (None, 8, 8, 64)         0         
+ 2D)                                                             
+                                                                 
+ conv2d_4 (Conv2D)           (None, 8, 8, 128)         73856     
+                                                                 
+ conv2d_5 (Conv2D)           (None, 8, 8, 128)         147584    
+                                                                 
+ max_pooling2d_2 (MaxPooling  (None, 4, 4, 128)        0         
+ 2D)                                                             
+                                                                 
+ flatten (Flatten)           (None, 2048)              0         
+                                                                 
+ dense (Dense)               (None, 128)               262272    
+                                                                 
+ dense_1 (Dense)             (None, 10)                1290      
+                                                                 
+=================================================================
+Total params: 550,570
+Trainable params: 550,570
+Non-trainable params: 0
+_________________________________________________________________
+Epoch 1/10
+782/782 [==============================] - 80s 102ms/step - loss: 1.7482 - accuracy: 0.3695 - val_loss: 1.4526 - val_accuracy: 0.4762
+Epoch 2/10
+782/782 [==============================] - 76s 97ms/step - loss: 1.3948 - accuracy: 0.5010 - val_loss: 1.3192 - val_accuracy: 0.5237
+Epoch 3/10
+782/782 [==============================] - 82s 104ms/step - loss: 1.2220 - accuracy: 0.5688 - val_loss: 1.2416 - val_accuracy: 0.5588
+Epoch 4/10
+782/782 [==============================] - 79s 101ms/step - loss: 1.0904 - accuracy: 0.6166 - val_loss: 1.0712 - val_accuracy: 0.6186
+Epoch 5/10
+782/782 [==============================] - 80s 102ms/step - loss: 0.9939 - accuracy: 0.6504 - val_loss: 1.0029 - val_accuracy: 0.6472
+Epoch 6/10
+782/782 [==============================] - 77s 98ms/step - loss: 0.9103 - accuracy: 0.6827 - val_loss: 0.9788 - val_accuracy: 0.6585
+Epoch 7/10
+782/782 [==============================] - 76s 97ms/step - loss: 0.8430 - accuracy: 0.7064 - val_loss: 0.9214 - val_accuracy: 0.6768
+Epoch 8/10
+782/782 [==============================] - 76s 97ms/step - loss: 0.7852 - accuracy: 0.7266 - val_loss: 0.8990 - val_accuracy: 0.6790
+Epoch 9/10
+782/782 [==============================] - 75s 96ms/step - loss: 0.7273 - accuracy: 0.7459 - val_loss: 0.8677 - val_accuracy: 0.6987
+Epoch 10/10
+782/782 [==============================] - 76s 97ms/step - loss: 0.6718 - accuracy: 0.7657 - val_loss: 0.8607 - val_accuracy: 0.7012
+1563/1563 [==============================] - 17s 11ms/step
+313/313 [==============================] - 4s 11ms/step
+Podaj numer sklasyfikowanego obrazu z zakresu (1,9999) lub 0 w celu zakonczenia programu: 30
+Podaj numer sklasyfikowanego obrazu z zakresu (1,9999) lub 0 w celu zakonczenia programu: 1241
+Podaj numer sklasyfikowanego obrazu z zakresu (1,9999) lub 0 w celu zakonczenia programu: 8923
+Podaj numer sklasyfikowanego obrazu z zakresu (1,9999) lub 0 w celu zakonczenia programu: 0
+Zamykanie...
